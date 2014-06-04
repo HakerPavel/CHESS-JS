@@ -1,6 +1,3 @@
-//флажок на цвет
-//флажок на выбранную фигуру
-
 /*
  pawn - пешка
  rook - ладья
@@ -49,11 +46,20 @@ function CreateBoard (boardHeight, boardWidth) {
 		}
 	}
 }
+
 //расстановка фигур
 function Dotting () {
 
-// cell - клетка
-    cell = $(".whiteCell,.darkCell");   
+    cell = $(".whiteCell,.darkCell");
+
+    /*
+     pawn - пешка
+     rook - ладья
+     khight - конь
+     bitshop - слон
+     queen - ферзь
+     king - король
+     */
 
     for (var i = 1; i < 9; i++) {
         for (var j = 1; j < 9; j++) {
@@ -103,7 +109,7 @@ function Dotting () {
         }
     }
 }
-//превращение пешки в королеву, когда пешка дошла до противоположного края
+
 function PawnToQueen(where, figure){
     var figureColor = $(figure).attr('color');
     var xCord = $(where).attr('x');
@@ -136,10 +142,12 @@ function ClickChecked(cell) {
     $('.navigate').toggleClass('navigate'); //удалем варианты ходов
     $('.attack').toggleClass('attack'); //удаляем варианты атаки
 }
+
 //метод для выборки квадратов для подсвечивания атакой или навигацией
 function Point(x,y,i1, i2) {
     return $('[x='+ (parseInt(x)+i1) + '][y='+(parseInt(y)+i2)+']');
 }
+
 //вынес логику проверки на шах ладьи и слона в отдельные функции, чтобы не повторять код в логике ферзя
 function BitshopShahLogic(x,y,color){
     //goalCell 1-4 - это четыре разных направления возможного движения слона
@@ -149,7 +157,9 @@ function BitshopShahLogic(x,y,color){
     for (var i = 1; i < 9; i++) {
         var goalCell1 = Point(x,y,i,i);
         if (!IsEmpty(goalCell1)) {
-            if (ShahCheck(goalCell1, color)) {                
+            if (ShahCheck(goalCell1, color)) {
+			//ShahMove(cell, color);
+                //alert('Shah!');
                 return true;
             }
             break;
@@ -161,6 +171,7 @@ function BitshopShahLogic(x,y,color){
         var goalCell2 = Point(x,y,i,-i);
         if (!IsEmpty(goalCell2)) {
             if (ShahCheck(goalCell2, color)) {
+			//ShahMove(cell, color);
                 return true;
             }
             break;
@@ -172,6 +183,7 @@ function BitshopShahLogic(x,y,color){
         var goalCell3 = Point(x,y,-i,i)
         if (!IsEmpty(goalCell3)) {
             if (ShahCheck(goalCell3, color)) {
+			//ShahMove(cell, color);
                 return true;
             }
             break;
@@ -183,6 +195,7 @@ function BitshopShahLogic(x,y,color){
         var goalCell4 = Point(x,y,-i,-i);
         if (!IsEmpty(goalCell4)) {
             if (ShahCheck(goalCell4, color)) {
+			//ShahMove(cell, color);
                 return true;
             }
             break;
@@ -190,13 +203,14 @@ function BitshopShahLogic(x,y,color){
     }
 
 }
-//проверка на шах ладьи
 function RookShahLogic (x,y,color) {
     //подсветка предлагаемых ячеек ниже фигуры
     for (var i = x; i < 9; i++) {
         var goalCell = Point(i,y,1,0);
         if (!IsEmpty(goalCell)) {
-            if (ShahCheck(goalCell, color)) {                
+            if (ShahCheck(goalCell, color)) {
+			//ShahMove(cell, color);
+                //alert('Shah!');
                 return true;
             }
             break;
@@ -207,7 +221,9 @@ function RookShahLogic (x,y,color) {
     for (var i = x; i > 0; i--) {
         var goalCell = Point(i,y,-1,0);
         if (!IsEmpty(goalCell)) {
-            if (ShahCheck(goalCell, color)) {                
+            if (ShahCheck(goalCell, color)) {
+			//ShahMove(cell, color);
+                //alert('Shah!');
                 return true;
             }
             break;
@@ -218,7 +234,9 @@ function RookShahLogic (x,y,color) {
     for (var j = y; j < 9; j++) {
         var goalCell = Point(x,j,0,1)
         if (!IsEmpty(goalCell)) {
-            if (ShahCheck(goalCell, color)) {                
+            if (ShahCheck(goalCell, color)) {
+			//ShahMove(cell, color);
+                //alert('Shah!');
                 return true;
             }
             break;
@@ -228,7 +246,9 @@ function RookShahLogic (x,y,color) {
     for (var j = y; j > 0; j--) {
         var goalCell = Point(x,j,0,-1);
         if (!IsEmpty(goalCell)) {
-            if (ShahCheck(goalCell, color)) {                
+            if (ShahCheck(goalCell, color)) {
+			//ShahMove(cell, color);
+                //alert('Shah!');
                 return true;
             }
             break;
@@ -236,6 +256,7 @@ function RookShahLogic (x,y,color) {
     }
 
 }
+
 //проверка на шах
 function IsShah (x,y,type,color) {
     if (type == 'pawn') {
@@ -336,15 +357,26 @@ function IsShah (x,y,type,color) {
     }
     return false;
 }
-//шах
+/*function ShahMove(cell, color) {
+var figure = $(cell).children();
+if (figure.attr('type') != 'king' && figure.attr('color') != color && $(where).hasClass('navigate')) {
+Move (figure, where);
+        return true;
+    }
+    return false;
+}*/
+
 function ShahCheck(cell,color) {
     var figure = $(cell).children();
     if (figure.attr('type') == 'king' && figure.attr('color') != color) {
         return true;
     }
+	//ShahMove(cell, color);
     return false;
 }
-//вынес подсветку логики ладьи и слона, т.к. их логика используется еще и ферзем
+
+//вынес подсветку логики ладьи и слона,
+//т.к. их логика используется еще и ферзем
 function RookMoveLogic(x,y,color){
     //подсветка предлагаемых ячеек ниже фигуры
     for (var i = x; i < 9; i++) {
@@ -397,7 +429,6 @@ function RookMoveLogic(x,y,color){
         }
     }
 }
-//логика движения слона
 function BitshopMoveLogic(x,y,color){
     //goalCell 1-4 - это четыре разных направления возможного движения слона
     //не придумал, как можно реализовать одним циклом, поэтому 4
@@ -411,6 +442,7 @@ function BitshopMoveLogic(x,y,color){
             if ($(goalCell1).children().attr('color') != color) {
                 goalCell1.toggleClass('attack');
                 ShahCheck(goalCell1, color); //проверка на шах
+				//ShahMove(cell, color);
             }
             break;
         }
@@ -425,12 +457,13 @@ function BitshopMoveLogic(x,y,color){
             if ($(goalCell2).children().attr('color') != color) {
                 goalCell2.toggleClass('attack');
                 ShahCheck(goalCell2, color); //проверка на шах
+				//ShahMove(cell, color);
             }
             break;
         }
     }
 
-    //северо-восток
+    //с-в
     for (var i = 1; i < 9; i++) {
         var goalCell3 = Point(x,y,-i,i)
         if (IsEmpty(goalCell3)) {
@@ -439,12 +472,13 @@ function BitshopMoveLogic(x,y,color){
             if ($(goalCell3).children().attr('color') != color) {
                 goalCell3.toggleClass('attack');
                 ShahCheck(goalCell3, color); //проверка на шах
+				//ShahMove(cell, color);
             }
             break;
         }
     }
 
-    //северо-запад
+    //с-з
     for (var i = 1; i < 9; i++) {
         var goalCell4 = Point(x,y,-i,-i);
         if (IsEmpty(goalCell4)) {
@@ -453,12 +487,18 @@ function BitshopMoveLogic(x,y,color){
             if ($(goalCell4).children().attr('color') != color) {
                 goalCell4.toggleClass('attack');
                 ShahCheck(goalCell4, color); //проверка на шах
+				//ShahMove(cell, color);
             }
             break;
         }
     }
 
 }
+
+
+
+
+
 //вставка фигуры в координаты
 function InsertFigure (x,y,figure) {
     $('[x='+x+']'+'[y='+y+']').append(figure);
@@ -467,11 +507,23 @@ function InsertFigure (x,y,figure) {
 function ToggleTurn (turn) {
     return !turn;
 }
+
 //проверка ячейки на наличие фигурки
 function IsEmpty (cell) {
     if ($(cell).find('img').length == 0) return true;
     return false;
 }
+
+/*function IsMat (x,y,type,color) {
+    
+}
+function MatCheck(cell,color) {
+    var figure = $(cell).children();
+    if (figure.attr('type') == 'king' && figure.attr('color') != color) {
+        return true;
+    }
+    return false;
+}*/
 //отрисовка логики ходов для фигур
 function Navigate (x,y,type,color) {
     //пешка
@@ -634,9 +686,7 @@ function Navigate (x,y,type,color) {
         BitshopMoveLogic(x,y,color);
     }
     //король
-    else if (type == 'king') {
-
-        var numberOfKingMoves = 0; //количество возможных ходов короля - мб для мата пригодится;
+    else if (type == 'king') {        
 
         //все возможные шаги вокруг короля
         var goalCell1 = Point(x,y,1,1);
@@ -736,10 +786,10 @@ function Move (figure, where) {
             PawnToQueen(where, figure);
         }
         if (IsShah(xCord,yCord, $(clFigure).attr('type'), $(clFigure).attr('color'))) {
-            alert ('Shah!');
-        }
+            alert ('Shah!');			
+        }	
 
-        return true; //успех
+        return true; //успешно
     }
     else {
         alert ('Can\'t move here!');
@@ -767,7 +817,7 @@ function Attack (attackedCell) {
 
 
 }
-//точка входа в приложение
+
 $(document).ready(function () {
 
     var whiteMove = true; //первые - белые
@@ -792,8 +842,7 @@ $(document).ready(function () {
             if (whiteMove && clFigureColor == 'white') { //если ход белых, а фигура белая
                 CheckRed(this); //выделяем ячейку
                 //выделяем возможный вариант хода
-                Navigate(clFigureX,clFigureY,clFigureType,clFigureColor);
-                //checked = true; //флаг выбранной фигуры
+                Navigate(clFigureX,clFigureY,clFigureType,clFigureColor);               
 
             } else if (whiteMove && clFigureColor != 'white') { //если ход белых, а фигура черная
                 $('#information').toggleClass('alertInformation');
@@ -802,8 +851,7 @@ $(document).ready(function () {
             else if (!whiteMove && clFigureColor == 'black') { //если ход чёрных, а фигура чёрная
                 CheckRed(this); //выделяем ячейку
                 //возможный вариант ходов
-                Navigate(clFigureX,clFigureY,clFigureType,clFigureColor);
-                checked = true;
+                Navigate(clFigureX,clFigureY,clFigureType,clFigureColor);                
             }
             else if (!whiteMove && clFigureColor == 'white') { //если ход черных, а фигура белая
                 $('#information').toggleClass('alertInformation');
